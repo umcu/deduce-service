@@ -32,9 +32,7 @@ class DeIdentify(Resource):
         data = request.get_json()
 
         # Run Deduce pipeline
-        annotated_text = deduce.annotate_text(*data)
-
-        # annotated_text = deduce.annotate_text(*data)
+        annotated_text = deduce.annotate_text(**data)
         deidentified_text = deduce.deidentify_annotations(annotated_text)
 
         # Format response
