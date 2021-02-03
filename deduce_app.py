@@ -1,7 +1,7 @@
 import deduce
+import multiprocessing
 from flask import Flask, request
 from flask_restx import Resource, Api, fields
-import multiprocessing
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
@@ -48,7 +48,7 @@ class DeIdentify(Resource):
 @api.route('/deidentify_bulk')
 class DeIdentifyBulk(Resource):
     @api.expect(payload_model_bulk)
-    # @api.marshal_list_with(response_model_bulk)
+    @api.marshal_list_with(response_model_bulk)
     def post(self):
         # Retrieve input data
         data = request.get_json()
@@ -62,8 +62,6 @@ class DeIdentifyBulk(Resource):
 def annotate_text(data):
     """
     Run a single text through the Deduce pipeline
-    :param data:
-    :return:
     """
     annotated_text = deduce.annotate_text(**data)
     deidentified_text = deduce.deidentify_annotations(annotated_text)
@@ -76,8 +74,6 @@ def annotate_text(data):
 def annotate_text_bulk(data):
     """
     Run multiple texts through the Deduce pipeline in parallel
-    :param data:
-    :return:
     """
     with multiprocessing.Pool() as pool:
         result = pool.map(annotate_text, data)
