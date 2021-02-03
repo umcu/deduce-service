@@ -2,9 +2,11 @@ import deduce
 from flask import Flask, request
 from flask_restx import Resource, Api, fields
 import multiprocessing
-
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app)
+
 api = Api(
     app,
     title="Deduce Web Service",
