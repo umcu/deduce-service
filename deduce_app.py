@@ -1,34 +1,31 @@
 import deduce
 import multiprocessing
+import utils
 from flask import Flask, request
 from flask_restx import Resource, Api, fields
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
-
 api = Api(
     app,
     title="Deduce Web Service",
     description="API to de-identify text using Deduce",
 )
 
-# Set example data, as provided in Deduce documentation
-example_data = {'text': 'Dit is stukje tekst met daarin de naam Jan Jansen. De patient J. Jansen (e: '
-                        'j.jnsen@email.com, t: 06-12345678) is 64 jaar oud en woonachtig in Utrecht. Hij werd op 10 '
-                        'oktober door arts Peter de Visser ontslagen van de kliniek van het UMCU.',
-                'patient_first_names': 'Jan',
-                'patient_surname': 'Jansen'}
+# Load example data
+example_data = utils.load_single_example_text()
+example_data_bulk = utils.load_multiple_example_texts()
 
 # Define input (payload) and output (response) models
 payload_model = api.model('payload', {'text': fields.String(example=example_data['text'], required=True),
                                       'patient_first_names': fields.String(example=example_data['patient_first_names']),
                                       'patient_surname': fields.String(example=example_data['patient_surname'])})
 payload_model_bulk = api.model('payloadbulk', {'texts': fields.List(fields.Nested(payload_model),
-                                                                    example=[example_data]*3)})
+                                                                    example=example_data_bulk['texts'])})
 response_model = api.model('response', {'text': fields.String})
-response_model_bulk = api.model('responsebulk', {'texts': fields.List(fields.Nested(payload_model),
-                                                                      example=[example_data]*3)})
+response_model_bulk = api.model('responsebulk', {'texts': fields.List(fields.Nested(response_model))})
 
 
 @api.route('/deidentify')

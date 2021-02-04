@@ -8,7 +8,11 @@ docker-compose up
 
 The API should now be available at http://localhost:5000/
 identification
+
 ## Usage
 - Use `/deidentify` for de-identification of a single text.
 - Use `/deidentify_bulk` for de-identification of multiple texts.
-See documentation in Swagger UI for the specific data format. 
+See documentation in Swagger UI for the specific data format.
+  
+## Tests
+In your IDE of choice, add a run configuration for `test/test_service.py` and set the working directory to the root directory of this repository.
