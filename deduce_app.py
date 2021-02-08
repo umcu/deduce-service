@@ -12,6 +12,7 @@ api = Api(
     app,
     title="Deduce Web Service",
     description="API to de-identify text using Deduce",
+    version='1.0'
 )
 
 # Load example data
@@ -19,11 +20,13 @@ example_data = utils.load_single_example_text()
 example_data_bulk = utils.load_multiple_example_texts()
 
 # Define input (payload) and output (response) models
+# Todo: Add remaining Deduce arguments, including examples & tests
 payload_model = api.model('payload', {'text': fields.String(example=example_data['text'], required=True),
-                                      'patient_first_names': fields.String(example=example_data['patient_first_names']),
+                                      'patient_first_names': fields.String(example=example_data['patient_first_names'],
+                                                                           description='Multiple names can be separated by white space'),
                                       'patient_surname': fields.String(example=example_data['patient_surname'])})
 payload_model_bulk = api.model('payloadbulk', {'texts': fields.List(fields.Nested(payload_model),
-                                                                    example=example_data_bulk['texts'])})
+                                                                    example=example_data_bulk['texts'], required=True)})
 response_model = api.model('response', {'text': fields.String})
 response_model_bulk = api.model('responsebulk', {'texts': fields.List(fields.Nested(response_model))})
 
