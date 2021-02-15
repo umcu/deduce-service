@@ -7,7 +7,6 @@ docker-compose up
 ```
 
 The API should now be available at http://localhost:5000/
-identification
 
 ## Usage
 - Use `/deidentify` for de-identification of a single text.
