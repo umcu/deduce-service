@@ -33,7 +33,7 @@ response_model_bulk = api.model('responsebulk', {'texts': fields.List(fields.Nes
 
 @api.route('/deidentify')
 class DeIdentify(Resource):
-    @api.expect(payload_model)
+    @api.expect(payload_model, validate=True)
     @api.marshal_with(response_model)
     def post(self):
         # Retrieve input data
@@ -47,7 +47,7 @@ class DeIdentify(Resource):
 
 @api.route('/deidentify_bulk')
 class DeIdentifyBulk(Resource):
-    @api.expect(payload_model_bulk)
+    @api.expect(payload_model_bulk, validate=True)
     @api.marshal_list_with(response_model_bulk)
     def post(self):
         # Retrieve input data
