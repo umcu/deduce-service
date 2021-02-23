@@ -25,10 +25,10 @@ payload_model = api.model('payload', {'text': fields.String(example=example_data
                                       'patient_first_names': fields.String(example=example_data['patient_first_names'],
                                                                            description='Multiple names can be separated by white space'),
                                       'patient_surname': fields.String(example=example_data['patient_surname']),
-                                      'id': fields.String(example=example_data['id'], required=False)})
+                                      'id': fields.Integer(example=example_data['id'], required=False)})
 payload_model_bulk = api.model('payloadbulk', {'texts': fields.List(fields.Nested(payload_model),
                                                                     example=example_data_bulk['texts'], required=True)})
-response_model = api.model('response', {'text': fields.String, 'id': fields.String(required=False)})
+response_model = api.model('response', {'text': fields.String, 'id': fields.Integer(required=False)})
 response_model_bulk = api.model('responsebulk', {'texts': fields.List(fields.Nested(response_model))})
 
 
