@@ -24,10 +24,11 @@ example_data_bulk = utils.load_multiple_example_texts()
 payload_model = api.model('payload', {'text': fields.String(example=example_data['text'], required=True),
                                       'patient_first_names': fields.String(example=example_data['patient_first_names'],
                                                                            description='Multiple names can be separated by white space'),
-                                      'patient_surname': fields.String(example=example_data['patient_surname'])})
+                                      'patient_surname': fields.String(example=example_data['patient_surname']),
+                                      'id': fields.String(example=example_data['id'], required=False)})
 payload_model_bulk = api.model('payloadbulk', {'texts': fields.List(fields.Nested(payload_model),
                                                                     example=example_data_bulk['texts'], required=True)})
-response_model = api.model('response', {'text': fields.String})
+response_model = api.model('response', {'text': fields.String, 'id': fields.String(required=False)})
 response_model_bulk = api.model('responsebulk', {'texts': fields.List(fields.Nested(response_model))})
 
 
@@ -63,11 +64,23 @@ def annotate_text(data):
     """
     Run a single text through the Deduce pipeline
     """
+    # Remove ID from object
+    record_id = None
+    if 'id' in data:
+        record_id = data['id']
+        del data['id']
+
+    # Run Deduce pipeline
     annotated_text = deduce.annotate_text(**data)
     deidentified_text = deduce.deidentify_annotations(annotated_text)
 
     # Format result
     result = {'text': deidentified_text}
+
+    # Add the ID if it was passed along
+    print(record_id)
+    if record_id:
+        result['id'] = record_id
     return result
 
 
@@ -84,4 +97,4 @@ def annotate_text_bulk(data):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=5002)
