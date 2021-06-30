@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "metadata": {
+    "appmode": "python-api",
+    "entrypoint": "app"
+  },
+  "locale": "nl_NL.UTF-8",
+  "python": {
+    "version": "3.8.10",
+    "package_manager": {
+      "name": "pip",
+      "version": "21.1.2",
+      "package_file": "requirements.txt"
+    }
+  },
+  "files": {
+    "requirements.txt": {
+      "checksum": "730888864c348f6dd682e836b140256d"
+    },
+    ".gitignore": {
+      "checksum": "f774a1920279e9f74ae4ecf1dcf112b6"
+    },
+    ".idea/.gitignore": {
+      "checksum": "bd588a782a4fe62c25b44342c8dbb173"
+    },
+    ".idea/deduce-service.iml": {
+      "checksum": "29f6bd57a5c080ad71cbc15d82eb2354"
+    },
+    ".idea/inspectionProfiles/Project_Default.xml": {
+      "checksum": "eb379962207a2f583221f91efdd0e305"
+    },
+    ".idea/inspectionProfiles/profiles_settings.xml": {
+      "checksum": "05dbe611f5bdb7a801adb3f064d4bfa9"
+    },
+    ".idea/misc.xml": {
+      "checksum": "3b86054cdd639f1d49eb7606a6281134"
+    },
+    ".idea/modules.xml": {
+      "checksum": "27e750ec80475793223033c95b0ec92e"
+    },
+    ".idea/vcs.xml": {
+      "checksum": "166acef3d301bd241d0d6da15bc5ad3c"
+    },
+    ".idea/workspace.xml": {
+      "checksum": "10ff3ba4972643b099d79c0d369c8ede"
+    },
+    ".pytest_cache/.gitignore": {
+      "checksum": "ae07caff09568018697eb6087d745223"
+    },
+    ".pytest_cache/CACHEDIR.TAG": {
+      "checksum": "d572d771fb0006af2333640b53f7bd18"
+    },
+    ".pytest_cache/README.md": {
+      "checksum": "5594682f1717726fadfcc41101281b88"
+    },
+    ".pytest_cache/v/cache/lastfailed": {
+      "checksum": "99914b932bd37a50b983c5e7c90ae93b"
+    },
+    ".pytest_cache/v/cache/nodeids": {
+      "checksum": "611a516250313887c42afe97d22f6334"
+    },
+    ".pytest_cache/v/cache/stepwise": {
+      "checksum": "d751713988987e9331980363e24189ce"
+    },
+    "Dockerfile": {
+      "checksum": "93fecaa13f099526e52e680a86f570ee"
+    },
+    "LICENSE": {
+      "checksum": "1ebbd3e34237af26da5dc08a4e440464"
+    },
+    "README.md": {
+      "checksum": "c3564a230899336a390e5e0d3576f263"
+    },
+    "__pycache__/deduce_app.cpython-38.pyc": {
+      "checksum": "5b171b95351f2ab127194f849168bc29"
+    },
+    "__pycache__/utils.cpython-38.pyc": {
+      "checksum": "ac96cf3b996c194e016da9f001699599"
+    },
+    "deduce_app.py": {
+      "checksum": "2ba032dac987e29849267b3ee5b61fa4"
+    },
+    "docker-compose.yml": {
+      "checksum": "adf78cd0ec113cd214738a5aea2bcfc2"
+    },
+    "test/.pytest_cache/.gitignore": {
+      "checksum": "ae07caff09568018697eb6087d745223"
+    },
+    "test/.pytest_cache/CACHEDIR.TAG": {
+      "checksum": "d572d771fb0006af2333640b53f7bd18"
+    },
+    "test/.pytest_cache/README.md": {
+      "checksum": "5594682f1717726fadfcc41101281b88"
+    },
+    "test/.pytest_cache/v/cache/lastfailed": {
+      "checksum": "2c631df43f4105c2a2540ee0dad946f0"
+    },
+    "test/.pytest_cache/v/cache/nodeids": {
+      "checksum": "d751713988987e9331980363e24189ce"
+    },
+    "test/.pytest_cache/v/cache/stepwise": {
+      "checksum": "d751713988987e9331980363e24189ce"
+    },
+    "test/__pycache__/test_service.cpython-38-pytest-6.2.2.pyc": {
+      "checksum": "a09b1da9c0d83cea160d28fc13c060bb"
+    },
+    "test/data/multiple_texts.json": {
+      "checksum": "e1a7071f78e06dde672000ef21cbc4a0"
+    },
+    "test/data/single_text.json": {
+      "checksum": "dc35a00e9e8dc0617221efe06ae78e9f"
+    },
+    "test/test_service.py": {
+      "checksum": "ee877a77c9d471bd1a23dbb5a99a2c11"
+    },
+    "utils.py": {
+      "checksum": "9df3dc6584b495a0a901e364a4491946"
+    }
+  }
+}
