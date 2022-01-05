@@ -9,7 +9,7 @@ def client():
     with app.test_client() as client:
         yield client
 
-def test_deidentify_null(client):
+def test_deidentify_none(client):
 
     example_data = {'text': None, 'id': 8345}
 
