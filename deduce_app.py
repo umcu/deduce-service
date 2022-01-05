@@ -83,7 +83,6 @@ def annotate_text(data):
     result = {'text': deidentified_text}
 
     # Add the ID if it was passed along
-    print(record_id)
     if record_id:
         result['id'] = record_id
     return result
