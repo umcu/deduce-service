@@ -19,9 +19,14 @@ api = Api(
 example_data = utils.load_single_example_text()
 example_data_bulk = utils.load_multiple_example_texts()
 
+
+class NullableString(fields.String):
+    __schema_type__ = ['string', 'null']
+    __schema_example__ = 'nullable string'
+
 # Define input (payload) and output (response) models
 # Todo: Add remaining Deduce arguments, including examples & tests
-payload_model = api.model('payload', {'text': fields.String(example=example_data['text'], required=True),
+payload_model = api.model('payload', {'text': NullableString(example=example_data['text'], required=True),
                                       'patient_first_names': fields.String(example=example_data['patient_first_names'],
                                                                            description='Multiple names can be separated by white space'),
                                       'patient_surname': fields.String(example=example_data['patient_surname']),
