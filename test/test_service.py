@@ -9,6 +9,17 @@ def client():
     with app.test_client() as client:
         yield client
 
+def test_deidentify_null(client):
+
+    example_data = {'text': None, 'id': 8345}
+
+    response = client.post("/deidentify",
+                           data=json.dumps(example_data),
+                           headers={"Content-Type": "application/json"})
+    data = response.get_json()
+
+    assert data['text'] is None
+
 
 def test_deidentify(client):
     example_data = utils.load_single_example_text()
