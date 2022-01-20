@@ -5,7 +5,6 @@ from flask import Flask, request
 from flask_restx import Resource, Api, fields
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 api = Api(
@@ -24,17 +23,41 @@ class NullableString(fields.String):
     __schema_type__ = ['string', 'null']
     __schema_example__ = 'nullable string'
 
+
 # Define input (payload) and output (response) models
 # Todo: Add remaining Deduce arguments, including examples & tests
-payload_model = api.model('payload', {'text': NullableString(example=example_data['text'], required=True),
-                                      'patient_first_names': fields.String(example=example_data['patient_first_names'],
-                                                                           description='Multiple names can be separated by white space'),
-                                      'patient_surname': fields.String(example=example_data['patient_surname']),
-                                      'id': fields.Integer(example=example_data['id'], required=False)})
-payload_model_bulk = api.model('payloadbulk', {'texts': fields.List(fields.Nested(payload_model),
-                                                                    example=example_data_bulk['texts'], required=True)})
-response_model = api.model('response', {'text': fields.String, 'id': fields.Integer(required=False)})
-response_model_bulk = api.model('responsebulk', {'texts': fields.List(fields.Nested(response_model))})
+payload_model = api.model(
+    'payload',
+    {
+        'text': NullableString(example=example_data['text'], required=True),
+        'patient_first_names': fields.String(example=example_data['patient_first_names'],
+                                             description='Multiple names can be separated by white space'),
+        'patient_surname': fields.String(example=example_data['patient_surname']),
+        'id': fields.Integer(example=example_data['id'], required=False),
+        'deidentify_dates': fields.Boolean(example=example_data['deidentify_dates'], required=False)
+    }
+)
+
+response_model = api.model(
+    'response',
+    {
+        'text': fields.String, 'id': fields.Integer(required=False)
+    }
+)
+
+payload_model_bulk = api.model(
+    'payloadbulk',
+    {
+        'texts': fields.List(fields.Nested(payload_model), example=example_data_bulk['texts'], required=True)
+    }
+)
+
+response_model_bulk = api.model(
+    'responsebulk',
+    {
+        'texts': fields.List(fields.Nested(response_model))
+    }
+)
 
 
 @api.route('/deidentify')
@@ -75,16 +98,19 @@ def annotate_text(data):
         record_id = data['id']
         del data['id']
 
+    deidentify_dates = data.get('deidentify_dates', default=True)  # default True
+
     # Run Deduce pipeline
-    annotated_text = deduce.annotate_text(**data)
+    annotated_text = deduce.annotate_text(**data, dates=deidentify_dates)
     deidentified_text = deduce.deidentify_annotations(annotated_text)
 
     # Format result
     result = {'text': deidentified_text}
 
     # Add the ID if it was passed along
-    if record_id:
+    if record_id is not None:
         result['id'] = record_id
+
     return result
 
 

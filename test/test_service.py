@@ -9,6 +9,7 @@ def client():
     with app.test_client() as client:
         yield client
 
+
 def test_deidentify_none(client):
 
     example_data = {'text': None, 'id': 8345}
@@ -17,6 +18,9 @@ def test_deidentify_none(client):
                            data=json.dumps(example_data),
                            headers={"Content-Type": "application/json"})
     data = response.get_json()
+
+    print(f"response = {response}")
+    print(f"data = {data}")
 
     assert data['text'] is None
 
@@ -36,6 +40,21 @@ def test_deidentify(client):
 
     # Test whether other functional parts are still included
     assert "ontslagen van de kliniek" in data['text']
+
+
+def test_deidentify_date_default(client):
+    """
+    Test that dates get deidentified when no deidentify_dates argument is set.
+    """
+
+    input_data = {
+        'text': "20 maart 2021",
+    }
+
+    response = client.post("/deidentify", data=input_data, headers={"Content-Type": "application/json"})
+    output_data = response.get_json()
+
+    assert output_data['text'] == "<DATUM-1>"
 
 
 def test_deidentify_bulk(client):
