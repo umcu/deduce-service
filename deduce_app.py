@@ -4,16 +4,25 @@ import utils
 from flask import Flask, request
 from flask_restx import Resource, Api, fields
 from werkzeug.middleware.proxy_fix import ProxyFix
+import logging
+
+
+class ErrorLoggingApi(Api):
+
+    def handle_error(self, e):
+        self.logger.error(e)
+        super().handle_error(e)
 
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
-api = Api(
+api = ErrorLoggingApi(
     app,
     title="Deduce Web Service",
     description="API to de-identify text using Deduce",
     version='1.0'
 )
+api.logger.setLevel(logging.INFO)
 
 # Load example data
 example_data = utils.load_single_example_text()
@@ -58,6 +67,8 @@ class DeIdentifyBulk(Resource):
     def post(self):
         # Retrieve input data
         data = request.get_json()
+
+        api.logger.info(f"Received {len(data['texts'])} texts in deidentify_bulk, starting to process...")
 
         # Run Deduce pipeline
         response = annotate_text_bulk(data['texts'])
