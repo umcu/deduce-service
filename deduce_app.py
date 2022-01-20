@@ -43,7 +43,7 @@ payload_model = api.model(
                                              description='Multiple names can be separated by white space'),
         'patient_surname': fields.String(example=example_data['patient_surname']),
         'id': fields.Integer(example=example_data['id'], required=False),
-        'deidentify_dates': fields.Boolean(example=example_data['deidentify_dates'], required=False)
+        'dates': fields.Boolean(example=example_data['dates'], required=False, default=True)
     }
 )
 
@@ -109,10 +109,9 @@ def annotate_text(data):
         record_id = data['id']
         del data['id']
 
-    deidentify_dates = data.get('deidentify_dates', default=True)  # default True
-
     # Run Deduce pipeline
-    annotated_text = deduce.annotate_text(**data, dates=deidentify_dates)
+    annotated_text = deduce.annotate_text(**data)
+    # annotated_text = deduce.annotate_text(**data)
     deidentified_text = deduce.deidentify_annotations(annotated_text)
 
     # Format result

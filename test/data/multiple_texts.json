@@ -4,7 +4,7 @@
       "patient_first_names": "Jan",
       "patient_surname": "Jansen",
       "id": 1234,
-      "deidentify_dates": "False"
+      "dates": false
     },
     {
       "text": "Piet de Jong was naar het UMCU gekomen met rugklachten. Opvallend is dat Piet nog redelijk jong is."
