@@ -19,9 +19,6 @@ def test_deidentify_none(client):
                            headers={"Content-Type": "application/json"})
     data = response.get_json()
 
-    print(f"response = {response}")
-    print(f"data = {data}")
-
     assert data['text'] is None
 
 
@@ -44,17 +41,48 @@ def test_deidentify(client):
 
 def test_deidentify_date_default(client):
     """
-    Test that dates get deidentified when no deidentify_dates argument is set.
+    Test that dates get deidentified when no dates argument is set.
+    """
+
+    input_data = {
+        'text': "20 maart 2021"
+    }
+
+    response = client.post("/deidentify", data=json.dumps(input_data), headers={"Content-Type": "application/json"})
+    output_data = response.get_json()
+
+    assert output_data['text'] == "<DATUM-1> 2021"
+
+def test_deidentify_date_true(client):
+    """
+    Test that dates get deidentified when dates argument is set to true.
     """
 
     input_data = {
         'text': "20 maart 2021",
+        'dates': True
     }
 
-    response = client.post("/deidentify", data=input_data, headers={"Content-Type": "application/json"})
+    response = client.post("/deidentify", data=json.dumps(input_data), headers={"Content-Type": "application/json"})
     output_data = response.get_json()
 
-    assert output_data['text'] == "<DATUM-1>"
+    assert output_data['text'] == "<DATUM-1> 2021"
+
+
+def test_deidentify_wihtout_dates(client):
+    """
+    Test that dates do not get deidentified when dates argument is set to false.
+    """
+
+    input_data = {
+        'text': "20 maart 2021",
+        'dates': False
+    }
+
+    response = client.post("/deidentify", data=json.dumps(input_data), headers={"Content-Type": "application/json"})
+    output_data = response.get_json()
+
+    assert output_data['text'] == input_data['text']
 
 
 def test_deidentify_bulk(client):
