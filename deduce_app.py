@@ -96,6 +96,8 @@ class DeIdentifyBulk(Resource):
         # Run Deduce pipeline
         response = annotate_text_bulk(data['texts'])
 
+        api.logger.info(f"Done processing {len(data['texts'])} texts.")
+
         return response
 
 
