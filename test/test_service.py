@@ -12,7 +12,7 @@ def client():
 
 def test_deidentify_none(client):
 
-    example_data = {'text': None, 'id': 8345}
+    example_data = {'text': None, 'id': '8345'}
 
     response = client.post("/deidentify",
                            data=json.dumps(example_data),
@@ -52,6 +52,7 @@ def test_deidentify_date_default(client):
     output_data = response.get_json()
 
     assert output_data['text'] == "<DATUM-1> 2021"
+
 
 def test_deidentify_date_true(client):
     """
