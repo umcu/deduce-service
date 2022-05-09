@@ -42,7 +42,7 @@ payload_model = api.model(
         'patient_first_names': fields.String(example=example_data['patient_first_names'],
                                              description='Multiple names can be separated by white space'),
         'patient_surname': fields.String(example=example_data['patient_surname']),
-        'id': fields.Integer(example=example_data['id'], required=False),
+        'id': fields.String(example=example_data['id'], required=False),
         'dates': fields.Boolean(example=example_data['dates'], required=False, default=True)
     }
 )
@@ -50,7 +50,7 @@ payload_model = api.model(
 response_model = api.model(
     'response',
     {
-        'text': fields.String, 'id': fields.Integer(required=False)
+        'text': fields.String, 'id': fields.String(required=False)
     }
 )
 
@@ -95,6 +95,8 @@ class DeIdentifyBulk(Resource):
 
         # Run Deduce pipeline
         response = annotate_text_bulk(data['texts'])
+
+        api.logger.info(f"Done processing {len(data['texts'])} texts.")
 
         return response
 

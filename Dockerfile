@@ -2,7 +2,11 @@ FROM python:3.7-slim
 
 WORKDIR /app
 
-# First install requirements
+# Install Git
+RUN apt-get -y update
+RUN apt-get -y install git
+
+# Install requirements
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
