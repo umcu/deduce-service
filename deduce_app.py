@@ -109,8 +109,15 @@ def annotate_text(data):
         record_id = data['id']
         del data['id']
 
+    api.logger.info(record_id)
+
     # Run Deduce pipeline
-    annotated_text = deduce.annotate_text(**data)
+
+    try:  # temporary workaround for https://github.com/vmenger/deduce/issues/44
+        annotated_text = deduce.annotate_text(**data)
+    except IndexError:
+        annotated_text = deduce.annotate_text(**data, dates=False)
+
     deidentified_text = deduce.deidentify_annotations(annotated_text)
 
     # Format result
