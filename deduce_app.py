@@ -111,8 +111,6 @@ def annotate_text(data):
         record_id = data['id']
         del data['id']
 
-    api.logger.info(record_id)
-
     # Run Deduce pipeline
 
     try:  # temporary workaround for https://github.com/vmenger/deduce/issues/44
