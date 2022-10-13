@@ -1,21 +1,15 @@
 import deduce
 import multiprocessing
 import utils
-from flask import Flask, request
+from flask import Flask, request, abort
 from flask_restx import Resource, Api, fields
 from werkzeug.middleware.proxy_fix import ProxyFix
 import logging
 
 
-class ErrorLoggingApi(Api):
-
-    def handle_error(self, e):
-        self.logger.error(e)
-        super().handle_error(e)
-
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
-api = ErrorLoggingApi(
+api = Api(
     app,
     title="Deduce Web Service",
     description="API to de-identify text using Deduce",
@@ -105,20 +99,23 @@ def annotate_text(data):
     """
     Run a single text through the Deduce pipeline
     """
+
     # Remove ID from object
-    record_id = None
-    if 'id' in data:
-        record_id = data['id']
-        del data['id']
+    record_id = data.pop('id', None)
 
     # Run Deduce pipeline
+    try:
+        try:  # temporary workaround for https://github.com/vmenger/deduce/issues/44
+            annotated_text = deduce.annotate_text(**data)
+        except IndexError:
+            annotated_text = deduce.annotate_text(**data, dates=False)
 
-    try:  # temporary workaround for https://github.com/vmenger/deduce/issues/44
-        annotated_text = deduce.annotate_text(**data)
-    except IndexError:
-        annotated_text = deduce.annotate_text(**data, dates=False)
+        deidentified_text = deduce.deidentify_annotations(annotated_text)
 
-    deidentified_text = deduce.deidentify_annotations(annotated_text)
+    except Exception as e:
+        api.logger.exception(e)
+        abort(500, f"Deduce encountered this error when processing a text: {e}. For full traceback, see logs.")
+        return
 
     # Format result
     result = {'text': deidentified_text}
