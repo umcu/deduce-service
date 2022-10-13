@@ -105,6 +105,7 @@ def annotate_text(data):
 
     # Run Deduce pipeline
     try:
+
         try:  # temporary workaround for https://github.com/vmenger/deduce/issues/44
             annotated_text = deduce.annotate_text(**data)
         except IndexError:
@@ -112,7 +113,9 @@ def annotate_text(data):
 
         deidentified_text = deduce.deidentify_annotations(annotated_text)
 
-    except Exception as e:
+    # catch some exceptions that might happen during running deduce
+    except (AttributeError, IndexError, KeyError, MemoryError, NameError, OverflowError,
+            RecursionError, RuntimeError, StopIteration, TypeError) as e:
         api.logger.exception(e)
         abort(500, f"Deduce encountered this error when processing a text: {e}. For full traceback, see logs.")
         return
