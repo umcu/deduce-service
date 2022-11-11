@@ -51,7 +51,8 @@ response_model = api.model(
 payload_model_bulk = api.model(
     'payloadbulk',
     {
-        'texts': fields.List(fields.Nested(payload_model), example=example_data_bulk['texts'], required=True)
+        'texts': fields.List(fields.Nested(payload_model), example=example_data_bulk['texts'], required=True),
+        'dates': fields.Boolean(example=example_data_bulk['dates'], required=False, default=True)
     }
 )
 
@@ -87,6 +88,11 @@ class DeIdentifyBulk(Resource):
 
         api.logger.info(f"Received {len(data['texts'])} texts in deidentify_bulk, starting to process...")
 
+        # If dates is configured on bulk level, set it on document level.
+        if 'dates' in data:
+            for records in data['texts']:
+                records['dates'] = data['dates']
+
         # Run Deduce pipeline
         response = annotate_text_bulk(data['texts'])
 
@@ -105,11 +111,11 @@ def annotate_text(data):
 
     # Run Deduce pipeline
     try:
-
         try:  # temporary workaround for https://github.com/vmenger/deduce/issues/44
             annotated_text = deduce.annotate_text(**data)
         except IndexError:
-            annotated_text = deduce.annotate_text(**data, dates=False)
+            data['dates'] = False
+            annotated_text = deduce.annotate_text(**data)
 
         deidentified_text = deduce.deidentify_annotations(annotated_text)
 
