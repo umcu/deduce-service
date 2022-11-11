@@ -70,7 +70,7 @@ def test_deidentify_date_true(client):
     assert output_data['text'] == "<DATUM-1> 2021"
 
 
-def test_deidentify_wihtout_dates(client):
+def test_deidentify_without_dates(client):
     """
     Test that dates do not get deidentified when dates argument is set to false.
     """
