@@ -12,7 +12,7 @@ def client():
         yield client
 
 
-class TestDeduce:
+class TestDeduceService:
     def test_deidentify_none(self, client):
 
         example_data = {"text": None, "id": "8345"}
