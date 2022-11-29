@@ -1,8 +1,7 @@
-git+https://github.com/vmenger/deduce@fast-temp#egg=deduce
+git+https://github.com/vmenger/deduce@main#egg=deduce
 flask_restx==0.5.1
 pytest==6.2.2
 # See https://stackoverflow.com/questions/73105877/importerror-cannot-import-name-parse-rule-from-werkzeug-routing
 werkzeug==2.1.2
 # See https://stackoverflow.com/questions/73337927/typeerror-init-got-an-unexpected-keyword-argument-unbound-message
 flask==2.1.3
-
