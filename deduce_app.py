@@ -1,24 +1,26 @@
 import logging
 import multiprocessing
+from typing import Optional
 
 import deduce
+from deduce.person import Person
 from flask import Flask, abort, request
 from flask_restx import Api, Resource, fields
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 import utils
 
+deduce_model = deduce.Deduce()
+
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 api = Api(
     app,
     title="Deduce Web Service",
-    description="API to de-identify text using Deduce",
-    version="1.0",
+    description=f"API to de-identify text using Deduce v{deduce.__version__}",
 )
 api.logger.setLevel(logging.INFO)
 
-# Load example data
 example_data = utils.load_single_example_text()
 example_data_bulk = utils.load_multiple_example_texts()
 
@@ -28,8 +30,6 @@ class NullableString(fields.String):
     __schema_example__ = "nullable string"
 
 
-# Define input (payload) and output (response) models
-# Todo: Add remaining Deduce arguments, including examples & tests
 payload_model = api.model(
     "payload",
     {
@@ -40,9 +40,7 @@ payload_model = api.model(
         ),
         "patient_surname": fields.String(example=example_data["patient_surname"]),
         "id": fields.String(example=example_data["id"], required=False),
-        "dates": fields.Boolean(
-            example=example_data["dates"], required=False, default=True
-        ),
+        "dates": fields.Boolean(example=example_data["dates"], required=False),
     },
 )
 
@@ -58,9 +56,7 @@ payload_model_bulk = api.model(
             example=example_data_bulk["texts"],
             required=True,
         ),
-        "dates": fields.Boolean(
-            example=example_data_bulk["dates"], required=False, default=True
-        ),
+        "dates": fields.Boolean(example=example_data_bulk["dates"], required=False),
     },
 )
 
@@ -74,13 +70,13 @@ class DeIdentify(Resource):
     @api.expect(payload_model, validate=True)
     @api.marshal_with(response_model)
     def post(self):
-        # Retrieve input data
+
         data = request.get_json()
 
-        # Run Deduce pipeline
-        response = annotate_text(data)
+        if data["text"] is None:
+            return format_result(data, output_text=None)
 
-        return response
+        return annotate_text(data)
 
 
 @api.route("/deidentify_bulk")
@@ -88,24 +84,29 @@ class DeIdentifyBulk(Resource):
     @api.expect(payload_model_bulk, validate=True)
     @api.marshal_list_with(response_model_bulk)
     def post(self):
-        # Retrieve input data
+
         data = request.get_json()
+        num_texts = len(data["texts"])
 
         api.logger.info(
-            f"Received {len(data['texts'])} texts in deidentify_bulk, starting to process..."
+            f"Received {num_texts} texts in " f"deidentify_bulk, starting to process..."
         )
 
-        # If dates is configured on bulk level, set it on document level.
-        if "dates" in data:
-            for records in data["texts"]:
-                records["dates"] = data["dates"]
+        response = annotate_text_bulk(request.get_json()["texts"])
 
-        # Run Deduce pipeline
-        response = annotate_text_bulk(data["texts"])
-
-        api.logger.info(f"Done processing {len(data['texts'])} texts.")
+        api.logger.info(f"Done processing {num_texts} texts.")
 
         return response
+
+
+def format_result(input_data: dict, output_text: Optional[str]) -> dict:
+
+    result = {"text": output_text}
+
+    if input_data.get("record_id", None):
+        result["id"] = input_data["record_id"]
+
+    return result
 
 
 def annotate_text(data):
@@ -113,20 +114,20 @@ def annotate_text(data):
     Run a single text through the Deduce pipeline
     """
 
-    # Remove ID from object
-    record_id = data.pop("id", None)
+    deduce_args = {"text": data["text"]}
 
-    # Run Deduce pipeline
+    if ("patient_first_names" in data) or ("patient_surname" in data):
+        deduce_args["metadata"] = dict()
+        deduce_args["metadata"]["patient"] = Person.from_keywords(
+            patient_first_names=data.get("patient_first_names", None),
+            patient_surname=data.get("patient_surname", None),
+        )
+
+    if not data.get("dates", True):
+        deduce_args["processors_disabled"] = {"dates"}
+
     try:
-        try:  # temporary workaround for https://github.com/vmenger/deduce/issues/44
-            annotated_text = deduce.annotate_text(**data)
-        except IndexError:
-            data["dates"] = False
-            annotated_text = deduce.annotate_text(**data)
-
-        deidentified_text = deduce.deidentify_annotations(annotated_text)
-
-    # catch some exceptions that might happen during running deduce
+        doc = deduce_model.deidentify(**deduce_args)
     except (
         AttributeError,
         IndexError,
@@ -146,14 +147,7 @@ def annotate_text(data):
         )
         return
 
-    # Format result
-    result = {"text": deidentified_text}
-
-    # Add the ID if it was passed along
-    if record_id is not None:
-        result["id"] = record_id
-
-    return result
+    return format_result(data, output_text=doc.deidentified_text)
 
 
 def annotate_text_bulk(data):
@@ -163,7 +157,6 @@ def annotate_text_bulk(data):
     with multiprocessing.Pool() as pool:
         result = pool.map(annotate_text, data)
 
-    # Format result
     result = {"texts": result}
     return result
 
