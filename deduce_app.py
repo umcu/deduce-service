@@ -1,11 +1,12 @@
-import deduce
-import multiprocessing
-import utils
-from flask import Flask, request, abort
-from flask_restx import Resource, Api, fields
-from werkzeug.middleware.proxy_fix import ProxyFix
 import logging
+import multiprocessing
 
+import deduce
+from flask import Flask, abort, request
+from flask_restx import Api, Resource, fields
+from werkzeug.middleware.proxy_fix import ProxyFix
+
+import utils
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)

@@ -1,5 +1,7 @@
-import pytest
 import json
+
+import pytest
+
 import utils
 from deduce_app import app
 
