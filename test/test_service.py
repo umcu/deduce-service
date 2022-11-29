@@ -110,7 +110,7 @@ class TestDeduceService:
     def test_deidentify_bulk_disabled(self, client):
 
         example_data_bulk = utils.load_multiple_example_texts()
-        example_data_bulk['disabled'] = ['names']
+        example_data_bulk["disabled"] = ["names"]
 
         response = client.post(
             "/deidentify_bulk",
@@ -120,6 +120,6 @@ class TestDeduceService:
         data = response.get_json()
 
         assert len(data["texts"]) == 2
-        assert "Jan Jansen" in data['texts'][0]['text']
+        assert "Jan Jansen" in data["texts"][0]["text"]
         assert "Jong" in data["texts"][1]["text"]
         assert "jong" in data["texts"][1]["text"]

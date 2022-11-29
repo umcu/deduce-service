@@ -41,9 +41,7 @@ payload_model = api.model(
         "patient_surname": fields.String(example=example_data["patient_surname"]),
         "id": fields.String(example=example_data["id"], required=False),
         "disabled": fields.List(
-            fields.String(),
-            example=example_data["disabled"],
-            required=False
+            fields.String(), example=example_data["disabled"], required=False
         ),
     },
 )
@@ -61,9 +59,7 @@ payload_model_bulk = api.model(
             required=True,
         ),
         "disabled": fields.List(
-            fields.String(),
-            example=example_data_bulk["disabled"],
-            required=False
+            fields.String(), example=example_data_bulk["disabled"], required=False
         ),
     },
 )
@@ -96,9 +92,9 @@ class DeIdentifyBulk(Resource):
         data = request.get_json()
         num_texts = len(data["texts"])
 
-        if 'disabled' in data:
-            for record in data['texts']:
-                record['disabled'] = data['disabled']
+        if "disabled" in data:
+            for record in data["texts"]:
+                record["disabled"] = data["disabled"]
 
         api.logger.info(
             f"Received {num_texts} texts in " f"deidentify_bulk, starting to process..."
@@ -136,7 +132,7 @@ def annotate_text(data):
         )
 
     if data.get("disabled", None):
-        deduce_args["disabled"] = set(data['disabled'])
+        deduce_args["disabled"] = set(data["disabled"])
 
     try:
         doc = deduce_model.deidentify(**deduce_args)
