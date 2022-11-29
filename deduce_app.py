@@ -13,7 +13,7 @@ api = Api(
     app,
     title="Deduce Web Service",
     description="API to de-identify text using Deduce",
-    version='1.0'
+    version="1.0",
 )
 api.logger.setLevel(logging.INFO)
 
@@ -23,48 +23,52 @@ example_data_bulk = utils.load_multiple_example_texts()
 
 
 class NullableString(fields.String):
-    __schema_type__ = ['string', 'null']
-    __schema_example__ = 'nullable string'
+    __schema_type__ = ["string", "null"]
+    __schema_example__ = "nullable string"
 
 
 # Define input (payload) and output (response) models
 # Todo: Add remaining Deduce arguments, including examples & tests
 payload_model = api.model(
-    'payload',
+    "payload",
     {
-        'text': NullableString(example=example_data['text'], required=True),
-        'patient_first_names': fields.String(example=example_data['patient_first_names'],
-                                             description='Multiple names can be separated by white space'),
-        'patient_surname': fields.String(example=example_data['patient_surname']),
-        'id': fields.String(example=example_data['id'], required=False),
-        'dates': fields.Boolean(example=example_data['dates'], required=False, default=True)
-    }
+        "text": NullableString(example=example_data["text"], required=True),
+        "patient_first_names": fields.String(
+            example=example_data["patient_first_names"],
+            description="Multiple names can be separated by white space",
+        ),
+        "patient_surname": fields.String(example=example_data["patient_surname"]),
+        "id": fields.String(example=example_data["id"], required=False),
+        "dates": fields.Boolean(
+            example=example_data["dates"], required=False, default=True
+        ),
+    },
 )
 
 response_model = api.model(
-    'response',
-    {
-        'text': fields.String, 'id': fields.String(required=False)
-    }
+    "response", {"text": fields.String, "id": fields.String(required=False)}
 )
 
 payload_model_bulk = api.model(
-    'payloadbulk',
+    "payloadbulk",
     {
-        'texts': fields.List(fields.Nested(payload_model), example=example_data_bulk['texts'], required=True),
-        'dates': fields.Boolean(example=example_data_bulk['dates'], required=False, default=True)
-    }
+        "texts": fields.List(
+            fields.Nested(payload_model),
+            example=example_data_bulk["texts"],
+            required=True,
+        ),
+        "dates": fields.Boolean(
+            example=example_data_bulk["dates"], required=False, default=True
+        ),
+    },
 )
 
 response_model_bulk = api.model(
-    'responsebulk',
-    {
-        'texts': fields.List(fields.Nested(response_model))
-    }
+    "responsebulk", {"texts": fields.List(fields.Nested(response_model))}
 )
 
 
-@api.route('/deidentify')
+@api.route("/deidentify")
 class DeIdentify(Resource):
     @api.expect(payload_model, validate=True)
     @api.marshal_with(response_model)
@@ -78,7 +82,7 @@ class DeIdentify(Resource):
         return response
 
 
-@api.route('/deidentify_bulk')
+@api.route("/deidentify_bulk")
 class DeIdentifyBulk(Resource):
     @api.expect(payload_model_bulk, validate=True)
     @api.marshal_list_with(response_model_bulk)
@@ -86,15 +90,17 @@ class DeIdentifyBulk(Resource):
         # Retrieve input data
         data = request.get_json()
 
-        api.logger.info(f"Received {len(data['texts'])} texts in deidentify_bulk, starting to process...")
+        api.logger.info(
+            f"Received {len(data['texts'])} texts in deidentify_bulk, starting to process..."
+        )
 
         # If dates is configured on bulk level, set it on document level.
-        if 'dates' in data:
-            for records in data['texts']:
-                records['dates'] = data['dates']
+        if "dates" in data:
+            for records in data["texts"]:
+                records["dates"] = data["dates"]
 
         # Run Deduce pipeline
-        response = annotate_text_bulk(data['texts'])
+        response = annotate_text_bulk(data["texts"])
 
         api.logger.info(f"Done processing {len(data['texts'])} texts.")
 
@@ -107,31 +113,44 @@ def annotate_text(data):
     """
 
     # Remove ID from object
-    record_id = data.pop('id', None)
+    record_id = data.pop("id", None)
 
     # Run Deduce pipeline
     try:
         try:  # temporary workaround for https://github.com/vmenger/deduce/issues/44
             annotated_text = deduce.annotate_text(**data)
         except IndexError:
-            data['dates'] = False
+            data["dates"] = False
             annotated_text = deduce.annotate_text(**data)
 
         deidentified_text = deduce.deidentify_annotations(annotated_text)
 
     # catch some exceptions that might happen during running deduce
-    except (AttributeError, IndexError, KeyError, MemoryError, NameError, OverflowError,
-            RecursionError, RuntimeError, StopIteration, TypeError) as e:
+    except (
+        AttributeError,
+        IndexError,
+        KeyError,
+        MemoryError,
+        NameError,
+        OverflowError,
+        RecursionError,
+        RuntimeError,
+        StopIteration,
+        TypeError,
+    ) as e:
         api.logger.exception(e)
-        abort(500, f"Deduce encountered this error when processing a text: {e}. For full traceback, see logs.")
+        abort(
+            500,
+            f"Deduce encountered this error when processing a text: {e}. For full traceback, see logs.",
+        )
         return
 
     # Format result
-    result = {'text': deidentified_text}
+    result = {"text": deidentified_text}
 
     # Add the ID if it was passed along
     if record_id is not None:
-        result['id'] = record_id
+        result["id"] = record_id
 
     return result
 
@@ -144,7 +163,7 @@ def annotate_text_bulk(data):
         result = pool.map(annotate_text, data)
 
     # Format result
-    result = {'texts': result}
+    result = {"texts": result}
     return result
 
 
