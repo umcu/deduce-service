@@ -26,6 +26,19 @@ class TestDeduceService:
 
         assert data["text"] is None
 
+    def test_deidentify_id(self, client):
+
+        example_data = {"text": None, "id": "8345"}
+
+        response = client.post(
+            "/deidentify",
+            data=json.dumps(example_data),
+            headers={"Content-Type": "application/json"},
+        )
+        data = response.get_json()
+
+        assert data["id"] == example_data['id']
+
     def test_deidentify(self, client):
 
         example_data = utils.load_single_example_text()

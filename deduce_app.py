@@ -111,8 +111,8 @@ def format_result(input_data: dict, output_text: Optional[str]) -> dict:
 
     result = {"text": output_text}
 
-    if input_data.get("record_id", None):
-        result["id"] = input_data["record_id"]
+    if input_data.get("id", None):
+        result["id"] = input_data["id"]
 
     return result
 
