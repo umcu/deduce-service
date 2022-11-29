@@ -65,7 +65,7 @@ class TestDeduceService:
         Test that dates get deidentified when dates argument is set to true.
         """
 
-        input_data = {"text": "20 maart 2021", "dates": True}
+        input_data = {"text": "20 maart 2021", "disabled": []}
 
         response = client.post(
             "/deidentify",
@@ -81,7 +81,7 @@ class TestDeduceService:
         Test that dates do not get deidentified when dates argument is set to false.
         """
 
-        input_data = {"text": "20 maart 2021", "dates": False}
+        input_data = {"text": "20 maart 2021", "disabled": ["dates"]}
 
         response = client.post(
             "/deidentify",
@@ -103,9 +103,23 @@ class TestDeduceService:
         )
         data = response.get_json()
 
-        # Test whether multiple results are returned
         assert len(data["texts"]) == 2
-        # Test whether de-identification of the second text was done correctly
         assert "Jong" not in data["texts"][1]["text"]
-        # Test whether the adjective use of "jong" was included
+        assert "jong" in data["texts"][1]["text"]
+
+    def test_deidentify_bulk_disabled(self, client):
+
+        example_data_bulk = utils.load_multiple_example_texts()
+        example_data_bulk['disabled'] = ['names']
+
+        response = client.post(
+            "/deidentify_bulk",
+            data=json.dumps(example_data_bulk),
+            headers={"Content-Type": "application/json"},
+        )
+        data = response.get_json()
+
+        assert len(data["texts"]) == 2
+        assert "Jan Jansen" in data['texts'][0]['text']
+        assert "Jong" in data["texts"][1]["text"]
         assert "jong" in data["texts"][1]["text"]
