@@ -37,7 +37,7 @@ class TestDeduceService:
         )
         data = response.get_json()
 
-        assert data["id"] == example_data['id']
+        assert data["id"] == example_data["id"]
 
     def test_deidentify(self, client):
 
