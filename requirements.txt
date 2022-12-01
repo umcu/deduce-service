@@ -1,4 +1,4 @@
-git+https://github.com/vmenger/deduce@main#egg=deduce
+deduce==2.0.0
 flask_restx==0.5.1
 pytest==6.2.2
 # See https://stackoverflow.com/questions/73105877/importerror-cannot-import-name-parse-rule-from-werkzeug-routing
