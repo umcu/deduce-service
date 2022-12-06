@@ -9,5 +9,5 @@
       "text": "Piet de Jong was naar het UMCU gekomen met rugklachten. Opvallend is dat Piet nog redelijk jong is."
     }
   ],
-  "dates": false
+  "disabled": ["dates"]
 }
