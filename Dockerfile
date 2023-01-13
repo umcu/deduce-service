@@ -7,11 +7,11 @@ RUN apt-get -y update
 RUN apt-get -y install git
 
 # Install requirements
-COPY ../requirements.txt .
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy the remaining files
-COPY .. /app
+COPY deduce-service/. /app
 
 # Run app
 ENV FLASK_APP deduce_app.py
