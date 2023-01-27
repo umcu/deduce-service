@@ -3,14 +3,16 @@ import multiprocessing
 from typing import Optional
 
 import deduce
+
+import utils
 from deduce.person import Person
+from deduce_model import initialize_deduce
 from flask import Flask, abort, request
 from flask_restx import Api, Resource, fields
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-import utils
+deduce_model = initialize_deduce()
 
-deduce_model = deduce.Deduce()
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)

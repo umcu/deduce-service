@@ -1,7 +1,6 @@
 import json
 
 import pytest
-
 import utils
 from deduce_app import app
 
@@ -53,7 +52,7 @@ class TestDeduceService:
         # Test whether the patient name is removed
         assert "Jansen" not in data["text"]
         # Test whether the patient name has been replaced
-        assert "<PATIENT>" in data["text"]
+        assert "[PATIENT]" in data["text"]
         # Test whether other functional parts are still included
         assert "ontslagen van de kliniek" in data["text"]
 
@@ -71,7 +70,7 @@ class TestDeduceService:
         )
         output_data = response.get_json()
 
-        assert output_data["text"] == "<DATUM-1>"
+        assert output_data["text"] == "[DATUM-1]"
 
     def test_deidentify_date_true(self, client):
         """
@@ -87,7 +86,7 @@ class TestDeduceService:
         )
         output_data = response.get_json()
 
-        assert output_data["text"] == "<DATUM-1>"
+        assert output_data["text"] == "[DATUM-1]"
 
     def test_deidentify_without_dates(self, client):
         """
