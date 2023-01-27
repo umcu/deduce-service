@@ -3,9 +3,9 @@ import multiprocessing
 from typing import Optional
 
 import deduce
-from examples import example_text, example_texts
 from deduce.person import Person
 from deduce_model import initialize_deduce
+from examples import example_text, example_texts
 from flask import Flask, abort, request
 from flask_restx import Api, Resource, fields
 from werkzeug.middleware.proxy_fix import ProxyFix

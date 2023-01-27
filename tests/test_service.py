@@ -1,7 +1,7 @@
 import json
 
-import pytest
 import examples
+import pytest
 from deduce_app import app
 
 
