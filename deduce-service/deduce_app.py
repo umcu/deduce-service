@@ -3,7 +3,6 @@ import multiprocessing
 from typing import Optional
 
 import deduce
-
 import utils
 from deduce.person import Person
 from deduce_model import initialize_deduce
