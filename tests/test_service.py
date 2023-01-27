@@ -1,7 +1,7 @@
 import json
 
 import pytest
-import utils
+import examples
 from deduce_app import app
 
 
@@ -40,7 +40,7 @@ class TestDeduceService:
 
     def test_deidentify(self, client):
 
-        example_data = utils.load_single_example_text()
+        example_data = examples.load_single_example_text()
 
         response = client.post(
             "/deidentify",
@@ -106,7 +106,7 @@ class TestDeduceService:
 
     def test_deidentify_bulk(self, client):
 
-        example_data_bulk = utils.load_multiple_example_texts()
+        example_data_bulk = examples.load_multiple_example_texts()
 
         response = client.post(
             "/deidentify_bulk",
@@ -121,7 +121,7 @@ class TestDeduceService:
 
     def test_deidentify_bulk_disabled(self, client):
 
-        example_data_bulk = utils.load_multiple_example_texts()
+        example_data_bulk = examples.load_multiple_example_texts()
         example_data_bulk["disabled"] = ["names"]
 
         response = client.post(
