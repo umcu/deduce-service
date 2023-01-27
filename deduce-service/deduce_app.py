@@ -3,9 +3,9 @@ import multiprocessing
 from typing import Optional
 
 import deduce
-import utils
 from deduce.person import Person
 from deduce_model import initialize_deduce
+from examples import example_text, example_texts
 from flask import Flask, abort, request
 from flask_restx import Api, Resource, fields
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -22,9 +22,6 @@ api = Api(
 )
 api.logger.setLevel(logging.INFO)
 
-example_data = utils.load_single_example_text()
-example_data_bulk = utils.load_multiple_example_texts()
-
 
 class NullableString(fields.String):
     __schema_type__ = ["string", "null"]
@@ -34,15 +31,15 @@ class NullableString(fields.String):
 payload_model = api.model(
     "payload",
     {
-        "text": NullableString(example=example_data["text"], required=True),
+        "text": NullableString(example=example_text["text"], required=True),
         "patient_first_names": fields.String(
-            example=example_data["patient_first_names"],
+            example=example_text["patient_first_names"],
             description="Multiple names can be separated by white space",
         ),
-        "patient_surname": fields.String(example=example_data["patient_surname"]),
-        "id": fields.String(example=example_data["id"], required=False),
+        "patient_surname": fields.String(example=example_text["patient_surname"]),
+        "id": fields.String(example=example_text["id"], required=False),
         "disabled": fields.List(
-            fields.String(), example=example_data["disabled"], required=False
+            fields.String(), example=example_text["disabled"], required=False
         ),
     },
 )
@@ -56,11 +53,11 @@ payload_model_bulk = api.model(
     {
         "texts": fields.List(
             fields.Nested(payload_model),
-            example=example_data_bulk["texts"],
+            example=example_texts["texts"],
             required=True,
         ),
         "disabled": fields.List(
-            fields.String(), example=example_data_bulk["disabled"], required=False
+            fields.String(), example=example_texts["disabled"], required=False
         ),
     },
 )
