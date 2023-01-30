@@ -109,7 +109,7 @@ def format_result(input_data: dict, output_text: Optional[str]) -> dict:
 
     result = {
         "text": output_text,
-        "version": f"deduce_{deduce_model.__version__}_deduce-service_{__version__}"
+        "version": f"deduce_{deduce.__version__}_deduce-service_{__version__}"
     }
 
     if input_data.get("id", None):

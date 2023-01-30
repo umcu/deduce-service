@@ -38,9 +38,24 @@ class TestDeduceService:
 
         assert data["id"] == example_data["id"]
 
+    def test_version(self, client):
+
+        example_data = {"text": "Een stukje tekst", "id": "1"}
+
+        response = client.post(
+            "/deidentify",
+            data=json.dumps(example_data),
+            headers={"Content-Type": "application/json"},
+        )
+        data = response.get_json()
+
+        assert 'version' in data
+
+
     def test_deidentify(self, client):
 
-        example_data = examples.load_single_example_text()
+        with open('../tests/data/single_text.json', 'r') as file:
+            example_data = json.load(file)
 
         response = client.post(
             "/deidentify",
@@ -106,7 +121,8 @@ class TestDeduceService:
 
     def test_deidentify_bulk(self, client):
 
-        example_data_bulk = examples.load_multiple_example_texts()
+        with open('../tests/data/multiple_texts.json', 'r') as file:
+            example_data_bulk = json.load(file)
 
         response = client.post(
             "/deidentify_bulk",
@@ -121,7 +137,9 @@ class TestDeduceService:
 
     def test_deidentify_bulk_disabled(self, client):
 
-        example_data_bulk = examples.load_multiple_example_texts()
+        with open('../tests/data/multiple_texts.json', 'r') as file:
+            example_data_bulk = json.load(file)
+
         example_data_bulk["disabled"] = ["names"]
 
         response = client.post(
@@ -135,3 +153,4 @@ class TestDeduceService:
         assert "Jan Jansen" in data["texts"][0]["text"]
         assert "Jong" in data["texts"][1]["text"]
         assert "jong" in data["texts"][1]["text"]
+
