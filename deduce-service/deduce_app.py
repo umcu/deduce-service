@@ -11,7 +11,7 @@ from flask_restx import Api, Resource, fields
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 deduce_model = initialize_deduce()
-
+__version__ = '0.0.1'
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -45,7 +45,7 @@ payload_model = api.model(
 )
 
 response_model = api.model(
-    "response", {"text": fields.String, "id": fields.String(required=False)}
+    "response", {"text": fields.String, "id": fields.String(required=False), "version": fields.String()}
 )
 
 payload_model_bulk = api.model(
@@ -107,7 +107,10 @@ class DeIdentifyBulk(Resource):
 
 def format_result(input_data: dict, output_text: Optional[str]) -> dict:
 
-    result = {"text": output_text}
+    result = {
+        "text": output_text,
+        "version": f"deduce_{deduce_model.__version__}_deduce-service_{__version__}"
+    }
 
     if input_data.get("id", None):
         result["id"] = input_data["id"]
