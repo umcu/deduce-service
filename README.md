@@ -1,5 +1,10 @@
 # Deduce Service
+
+> :warning: This repository is no longer maintained/updated, but please feel free to use it for inspiration.
+
 Web Service for [Deduce](https://github.com/vmenger/deduce), to be used in pipelines such as [CogStack-NiFi](https://github.com/cogstack/cogstack-nifi).
+
+
 
 ## Installation
 ```bash
